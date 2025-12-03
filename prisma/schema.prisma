@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String          @id @default(cuid())
+  email         String          @unique
+  password      String
+  isAdmin       Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  migrationJobs MigrationJob[]
+}
+
+model MailcowConfig {
+  id         String   @id @default(cuid())
+  host       String
+  port       Int      @default(22)
+  username   String
+  privateKey String?
+  password   String?
+  vmailPath  String   @default("/var/vmail")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model MigrationJob {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  emailAddress  String
+  domain        String
+  status        String   @default("pending") // pending, processing, completed, failed
+  progress      Int      @default(0)
+  errorMessage  String?
+  fileName      String
+  filePath      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
