@@ -5,6 +5,7 @@ Sistema web desenvolvido em Next.js para facilitar a migração de emails do Zim
 ## Funcionalidades
 
 - ✅ Autenticação de usuários com NextAuth
+- ✅ Gerenciamento de usuários pelo administrador
 - ✅ Interface para upload de arquivos TGZ do Zimbra
 - ✅ Processamento automático dos arquivos
 - ✅ Transferência via SSH para o servidor Mailcow
@@ -74,13 +75,15 @@ O sistema estará disponível em `http://localhost:3000`
    - Email: `admin@example.com`
    - Senha: `admin123`
 
-3. **IMPORTANTE**: Vá para o painel administrativo e configure o servidor Mailcow antes de fazer migrações
+3. **IMPORTANTE**: Configure o sistema antes de permitir migrações:
+   - Configure o servidor Mailcow no painel administrativo
+   - Cadastre os usuários que poderão fazer migrações
 
 ## Configuração do Mailcow (Admin)
 
 Como administrador, você precisa configurar a conexão com o servidor Mailcow:
 
-1. Clique em "Admin" no menu superior
+1. Clique em "Admin" no menu superior, depois em "Configurações"
 2. Preencha os dados do servidor:
    - **Host do Servidor**: IP ou hostname do servidor Mailcow
    - **Porta SSH**: Normalmente 22
@@ -90,6 +93,31 @@ Como administrador, você precisa configurar a conexão com o servidor Mailcow:
    - **Caminho do vmail**: Normalmente `/var/vmail`
 
 3. Clique em "Salvar Configuração"
+
+## Gerenciamento de Usuários (Admin)
+
+**IMPORTANTE**: Apenas administradores podem cadastrar novos usuários. Não há registro público.
+
+Os usuários cadastrados devem ter os **mesmos endereços de email** que estão configurados no Mailcow. Isso é essencial para que a migração funcione corretamente.
+
+### Cadastrar Novo Usuário
+
+1. Clique em "Admin" no menu superior, depois em "Gerenciar Usuários"
+2. Clique no botão "Novo Usuário"
+3. Preencha os dados:
+   - **Email**: Use o mesmo email que existe no Mailcow (ex: `usuario@exemplo.com`)
+   - **Senha**: Senha para acesso ao sistema de migração (mínimo 6 caracteres)
+   - **Confirmar Senha**: Repita a senha
+   - **Administrador**: Marque se o usuário também será admin
+
+4. Clique em "Criar Usuário"
+
+### Remover Usuário
+
+1. Na lista de usuários, clique em "Remover" ao lado do usuário desejado
+2. Confirme a remoção
+
+**Nota**: Não é possível remover sua própria conta de administrador.
 
 ## Como Usar (Usuário)
 
@@ -138,12 +166,15 @@ zimbra-mailcow-migration/
 │   │   ├── auth/           # Autenticação NextAuth
 │   │   ├── upload/         # Upload de arquivos
 │   │   ├── jobs/           # Listagem de jobs
-│   │   ├── register/       # Registro de usuários
+│   │   ├── register/       # Registro (desabilitado)
 │   │   └── admin/          # Rotas administrativas
+│   │       ├── mailcow-config/ # Config do Mailcow
+│   │       └── users/      # Gerenciamento de usuários
 │   ├── dashboard/          # Dashboard do usuário
 │   ├── admin/              # Painel administrativo
+│   │   └── users/          # Gerenciamento de usuários
 │   ├── login/              # Página de login
-│   └── register/           # Página de registro
+│   └── register/           # Redireciona para login
 ├── lib/
 │   ├── auth.ts             # Configuração NextAuth
 │   ├── prisma.ts           # Cliente Prisma
@@ -183,9 +214,11 @@ npm run start
 
 - Senhas são hasheadas com bcryptjs
 - Autenticação via JWT (NextAuth)
+- Apenas admins podem cadastrar usuários (registro público desabilitado)
 - Acesso SSH via chave privada (recomendado)
 - Validação de permissões em todas as rotas
 - Arquivos de upload isolados por usuário
+- Usuários devem ter os mesmos emails do Mailcow
 
 ## Limitações
 

@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { hash } from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
+    // Apenas admins podem criar usuários
+    const session = await getServerSession(authOptions)
+    if (!session?.user || !(session.user as any).isAdmin) {
+      return NextResponse.json(
+        { error: 'Apenas administradores podem criar usuários' },
+        { status: 401 }
+      )
+    }
+
     const body = await request.json()
     const { email, password } = body
 

@@ -97,12 +97,20 @@ export default function AdminPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <h1 className="text-xl font-bold">Painel Administrativo</h1>
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="text-sm text-blue-600 hover:text-blue-500"
-            >
-              Voltar ao Dashboard
-            </button>
+            <div className="flex gap-4">
+              <button
+                onClick={() => router.push('/admin/users')}
+                className="text-sm text-blue-600 hover:text-blue-500"
+              >
+                Gerenciar Usuários
+              </button>
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="text-sm text-blue-600 hover:text-blue-500"
+              >
+                Dashboard
+              </button>
+            </div>
           </div>
         </div>
       </nav>
